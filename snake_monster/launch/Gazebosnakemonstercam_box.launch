@@ -6,8 +6,8 @@
   <arg name="headless" default="true"/>
   <arg name="debug" default="false"/>
   <arg name="physics" default="ode"/>
-  <arg name="world_file"  default="$(env GYM_GAZEBO_WORLD_CIRCUIT2C)"/>
-  <!-- <arg name="world_file"  default="$(env GYM_GAZEBO_WORLD_MAZE)"/> -->
+  <!-- <arg name="world_file"  default="$(env GYM_GAZEBO_WORLD_CIRCUIT2C)"/> -->
+  <arg name="world_file"  default="$(env GYM_GAZEBO_WORLD_BOX)"/>
   
   <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -25,12 +25,12 @@
   <arg name="run_state_publisher" default="true" />
 
   <rosparam command="load" file="$(find snake_monster)/config/modules.yaml" />
-  <arg name="model" default="$(find snake_monster)/urdf/my_snake_monster.xacro" />
+  <arg name="model" default="$(find snake_monster)/urdf/snake_monster_kinect_lidar.xacro" />
   <param name="robot_description" command="rosrun xacro xacro --inorder $(arg model)" />
 
   <!-- push robot_description to factory and spawn robot in gazebo -->
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
-        args="-z 0.25 -x 3.25 -Y 1.57 -unpause -urdf -model robot -param robot_description" respawn="false" output="screen" />
+        args="-z 0.10 -x 2.5 -Y 1.5704 -unpause -urdf -model robot -param robot_description" respawn="false" output="screen" />
 
   <group if="$(arg run_state_publisher)">
     <node pkg="robot_state_publisher" type="robot_state_publisher"  name="rob_st_pub">

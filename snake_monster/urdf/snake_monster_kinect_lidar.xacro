@@ -182,88 +182,43 @@
     <origin xyz="${-width/2} -${leg_y_offset} ${height/2}" rpy="-${PI/2} 0 ${PI/2}"/>
   </joint>
   
-    <xacro:property name="camera_link" value="0.05" /> <!-- Size of square 'camera' box -->
-    <joint name="camera_joint" type="fixed">
-    <axis xyz="0 1 0" />
-    <origin xyz="0 0.125 0.052" rpy="0 0 1.57"/>
-    <parent link="base"/>
-    <child link="camera_link"/>
-  </joint>
-      <sensor type="depth" name="camera">
-        <always_on>true</always_on>
-        <update_rate>20.0</update_rate>
-        <camera>
-          <horizontal_fov>${60.0*M_PI/180.0}</horizontal_fov>
-          <image>
-            <format>R8G8B8</format>
-            <width>480</width>
-            <height>480</height>
-          </image>
-          <clip>
-            <near>0.05</near>
-            <far>8.0</far>
-          </clip>
-        </camera>
-        <plugin name="kinect_camera_controller" filename="libgazebo_ros_openni_kinect.so">
-          <cameraName>camera</cameraName>
-          <alwaysOn>true</alwaysOn>
-          <updateRate>10</updateRate>
-          <imageTopicName>rgb/image_raw</imageTopicName>
-          <depthImageTopicName>depth/image_raw</depthImageTopicName>
-          <pointCloudTopicName>depth/points</pointCloudTopicName>
-          <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
-          <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
-          <frameName>camera_depth_optical_frame</frameName>
-          <baseline>0.1</baseline>
-          <distortion_k1>0.0</distortion_k1>
-          <distortion_k2>0.0</distortion_k2>
-          <distortion_k3>0.0</distortion_k3>
-          <distortion_t1>0.0</distortion_t1>
-          <distortion_t2>0.0</distortion_t2>
-          <pointCloudCutoff>0.4</pointCloudCutoff>
-        </plugin>
-      </sensor>
-
   <!-- Camera -->
-  <link name="camera_link">
-    <collision>
-      <origin xyz="0 0 0.052" rpy="0 0 1.57"/>
-      <geometry>
-    <box size="${camera_link} ${camera_link} ${camera_link}"/>
-      </geometry>
-    </collision>
-
+  <joint name="kdl_dummy_root_to_camera" type="fixed">
+    <parent link="kdl_dummy_root"/>
+    <child link="camera_base"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+  <link name="camera_base">
     <visual>
-      <origin xyz="-0.02 -0.02 0.024" rpy="0 0 0"/>
+      <origin xyz="-0 -0 0" rpy="0 0 0"/>
       <geometry>
-    <mesh filename="package://snake_monster/meshes/gopro.dae"/>
+        <box size="0.0001 0.0001 0.0001"/>
       </geometry>
       <material name="red"/>
     </visual>
-
-    <inertial>
-      <mass value="1e-5" />
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
-    </inertial>
   </link>
-  
- <xacro:include filename="$(find kobuki_description)/urdf/sensors/lidar_sensor.urdf.xacro" />
- <xacro:lidar_sensor
-    name="sonar2"
-    parent="yrot"
-    ros_topic="sonar_front"
-    update_rate="10"
-    min_range="0.06"
-    max_range="4.0"
-    field_of_view_horizontal="${270*M_PI/180}"
-    field_of_view_vertical="${1*M_PI/180}"
-    ray_count_horizontal="200"
-    ray_count_vertical="1"
-    sensor_mesh="lidar_lite_v2_withRay/meshes/lidar_lite_v2_withRay.dae">
-    <origin xyz="0 0 0.405" rpy="0 0 1.57"/>
-  </xacro:lidar_sensor>
 
+    <xacro:property name="camera_link" value="0.05" /> <!-- Size of square 'camera' box --> 
+    <!-- <xacro:include filename="$(find turtlebot_description)/urdf/sensors/kinect.urdf.xacro"/> -->
+    <xacro:include filename="$(find snake_monster)/urdf/kinect.urdf.xacro"/>
+    <sensor_kinect  parent="camera_base"/>
+
+   <xacro:include filename="$(find kobuki_description)/urdf/sensors/lidar_sensor.urdf.xacro" />
+   <xacro:lidar_sensor
+      name="sonar2"
+      parent="yrot"
+      ros_topic="sonar_front"
+      update_rate="10"
+      min_range="0.06"
+      max_range="4.0"
+      field_of_view_horizontal="${270*M_PI/180}"
+      field_of_view_vertical="${1*M_PI/180}"
+      ray_count_horizontal="200"
+      ray_count_vertical="1"
+      sensor_mesh="lidar_lite_v2_withRay/meshes/lidar_lite_v2_withRay.dae">
+      <origin xyz="0 0 0.405" rpy="0 0 1.57"/>
+    </xacro:lidar_sensor>
+    
   <!-- Import all Gazebo-customization elements -->
   <xacro:include filename="./my_snake_monster.gazebo" />
   
